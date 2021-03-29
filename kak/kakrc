@@ -1,0 +1,58 @@
+###
+### Appearance
+###
+
+add-highlighter global/ number-lines -relative
+add-highlighter global/ wrap
+
+
+###
+### Mappings
+###
+
+# editing
+map global user c ':comment-line<ret>' \
+-docstring "line comment"
+
+map global user C ':comment-block<ret>' \
+    -docstring "block comment"
+
+# copying and pasting
+map global user y '<a-|> xsel --input --clipboard<ret>' \
+    -docstring "yank the selection into the clipboard"
+map global user Y ': w! /tmp/scrathpad.bak<ret>%H<a-|> xsel --input --clipboard<ret>:q!<ret>' \
+    -docstring "yank to the whole buffer to clipboard and quit"
+map global user P '!xsel --output --clipboard<ret>' \
+    -docstring "paste content from clipboard before cursor"
+map global user p '<a-!>xsel --output --clipboard<ret>' \
+    -docstring "paste content from clipboard after cursor"
+
+# shell commands
+map global user ! ':echo %sh{}<left>' \
+    -docstring "shell command"
+map global user t ': nop %sh{$MYTERM <gt> /dev/null 2<gt>&1 <lt> /dev/null &}<ret>' \
+    -docstring "shell command"
+map global user k ': nop %sh{$MYTERM -e "kak" <gt> /dev/null 2<gt>&1 <lt> /dev/null &}<ret>' \
+    -docstring "shell command"
+
+
+###
+### Commands
+###
+
+define-command clear-buffer 'execute-keys <esc>%di' \
+    -docstring "clear the buffer and go in insert mode"
+
+
+###
+### Plugins
+###
+
+### kak-lsp
+eval %sh{kak-lsp --kakoune -s $kak_session}
+hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp) %{
+        lsp-enable-window
+}
+map global user l %{: enter-user-mode lsp<ret>} \
+-docstring "LSP mode"
+
