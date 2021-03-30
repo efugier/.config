@@ -13,7 +13,6 @@ add-highlighter global/ wrap
 # editing
 map global user c ':comment-line<ret>' \
 -docstring "line comment"
-
 map global user C ':comment-block<ret>' \
     -docstring "block comment"
 
@@ -34,6 +33,8 @@ map global user t ': nop %sh{$MYTERM <gt> /dev/null 2<gt>&1 <lt> /dev/null &}<re
     -docstring "shell command"
 map global user k ': nop %sh{$MYTERM -e "kak" <gt> /dev/null 2<gt>&1 <lt> /dev/null &}<ret>' \
     -docstring "shell command"
+map global user e ":edit-from-file<ret>" \
+    -docstring "edit a file starting from current file's directory"
 
 
 ###
@@ -42,6 +43,14 @@ map global user k ': nop %sh{$MYTERM -e "kak" <gt> /dev/null 2<gt>&1 <lt> /dev/n
 
 define-command clear-buffer 'execute-keys <esc>%di' \
     -docstring "clear the buffer and go in insert mode"
+
+define-command edit-from-file %{
+    exec %sh{
+        dn=$(dirname $kak_buffile)
+        echo ":edit $dn/"
+    }
+} \
+    -docstring "edit a file starting from current file's directory"
 
 
 ###
