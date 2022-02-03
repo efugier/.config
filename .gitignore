@@ -5,6 +5,9 @@
 !.gitignore
 !README.md
 
+!helix/config.toml
+!helix/languages.toml
+
 !alacritty/*
 !exec/*
 !fish/*

@@ -1,7 +1,7 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export EDITOR:kak
-SETUVAR --export GIT_EDITOR:kak
+SETUVAR --export EDITOR:hx
+SETUVAR --export GIT_EDITOR:hx
 SETUVAR --export MYTERM:alacritty
 SETUVAR --export TERM:alacritty
 SETUVAR __fish_classic_git_prompt_initialized:\x1d
