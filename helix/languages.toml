@@ -1,0 +1,3 @@
+[[language]]
+name = "toml"
+file-types = ["toml", "Pipfile"]

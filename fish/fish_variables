@@ -12,6 +12,7 @@ SETUVAR __fish_initialized:3100
 SETUVAR _fish_abbr_gam:git\x20commit\x20\x2d\x2damend
 SETUVAR _fish_abbr_gap:git\x20add\x20\x2dp
 SETUVAR _fish_abbr_gcm:git\x20commit\x20\x2dm
+SETUVAR _fish_abbr_gl:git\x20graphlog
 SETUVAR _fish_abbr_gpf:git\x20push\x20\x2d\x2dforce\x2dwith\x2dlease
 SETUVAR _fish_abbr_gri:git\x20rebase\x20\x2di\x20HEAD\x7e3
 SETUVAR _fish_abbr_th:nohup\x20\x24MYTERM\x20\x3c/dev/null\x20\x26\x3e/dev/null\x20\x26\x3b\x20disown
