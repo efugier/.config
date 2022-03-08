@@ -3,6 +3,7 @@ theme = "onedark"
 line-number = "relative"
 mouse = true
 idle-timeout = 0
+auto-pairs = false
 
 [editor.cursor-shape]
 insert = "bar"
