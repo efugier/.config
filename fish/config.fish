@@ -1,3 +1,9 @@
+. ~/.config/fish/abbreviations.fish
+. ~/.config/fish/work_abbreviations.fish
+
+. ~/.config/fish/aliases.fish
+. ~/.config/fish/work_aliases.fish
+
 # system
 set -Ux EDITOR hx
 set -Ux GIT_EDITOR hx
@@ -21,8 +27,5 @@ pyenv init --path | source
 pyenv init - | source
 set -x PIPENV_PYTHON "$HOME/.pyenv/shims/python"
 set -x PIPENV_VENV_IN_PROJECT 1 # optional but recommended
-
-# httpie
-alias https='http --default-scheme=https'
 
 eval (starship init fish)
