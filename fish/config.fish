@@ -9,20 +9,21 @@ set -Ux EDITOR hx
 set -Ux GIT_EDITOR hx
 set -Ux MYTERM alacritty
 
+fish_add_path $HOME/.local/bin
 
 # Helix
 set -Ux HELIX_RUNTIME "$HOME/.config/helix/runtime"
 
 # Rust
-set -Ux PATH $HOME/.cargo/bin $PATH
+fish_add_path $HOME/.cargo/bin
 
 # Go
 set -Ux GOPATH "$HOME/go:$HOME/code"
-set -Ux PATH "$PATH:$GOPATH/bin"
-set -Ux PATH "$PATH:/usr/local/go/bin"
+fish_add_path "$GOPATH/bin"
+fish_add_path "/usr/local/go/bin"
 
 # Pyenv
-set -x PATH $HOME/.pyenv/bin $PATH
+fish_add_path $HOME/.pyenv/bin
 pyenv init --path | source
 pyenv init - | source
 set -x PIPENV_PYTHON "$HOME/.pyenv/shims/python"
