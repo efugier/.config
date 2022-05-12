@@ -1,4 +1,5 @@
 theme = "onedark"
+# theme = "spacebones_light"
 [editor]
 line-number = "relative"
 mouse = true

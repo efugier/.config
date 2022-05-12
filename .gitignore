@@ -5,6 +5,8 @@
 !.gitignore
 !README.md
 
+!nushell/config.nu
+
 !helix/config.toml
 !helix/languages.toml
 
