@@ -416,9 +416,59 @@ let-env PIPENV_PYTHON = $"($env.HOME)/.pyenv/shims/python"
 let-env PIPENV_VENV_IN_PROJECT = 1 # optional but recommended
 
 
-# -- ALIASES --
+# -- Aliases and commands --
 
 alias x = xargs
+
+def abspath [] {
+      each { |$it| $it | path expand | path parse | path join }
+}
+
+# Wrapper around `cd` that manages a `.cd_history` file and
+# allows you to chose from it using fzf.
+# All entries in the history are supposed to be normalized with the `abspath` command
+# and ordered by most recent-first.
+def-env c [
+    query: string = ""
+    # path, fzf query or special command
+    # ...................   - existing path, -, ~ → same as cd
+    # ...................   - _ → cross shell equivalent of - (newest entry in history)
+    # ...................   - everything else → query for fzf
+] {
+    let history_file = ("~/.cd_history" | abspath)
+
+    # nore recent must be on top for `uniq` preserve order
+    let cd_history = (open $history_file | lines)
+    let current_directory = (pwd | str trim | abspath)
+
+    let $target_dir = if ($query | path exists) {
+        let query = ($query | abspath)
+        $cd_history | prepend $query | uniq | save $history_file
+        $query
+    } else if ($query in ["~"]) {
+        $query
+    } else if $query == "-" {
+        # for some reason returning "-" above doesn't work
+        if "OLDPWD" in (env).name { $env.OLDPWD } else { "" }
+    } else if $query == "_" {
+        $cd_history
+        | where $it != $current_directory
+        | first
+    } else {
+        let target_dir = (
+            $cd_history
+            | where $it != $current_directory
+            | str replace $env.HOME "~"  # nicer on the eyes
+            | str collect "\n"
+            | fzf $"--query=($query)" | str trim | abspath
+        )
+        if $target_dir != "" && ($target_dir | path exists) {
+            $cd_history | prepend $target_dir | uniq | save $history_file
+        }
+        $target_dir
+    }
+    cd $target_dir
+}
 
 # git
 alias gs = git status
