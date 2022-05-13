@@ -5,7 +5,10 @@ add_newline = false
 [package]
 disabled = false
 
+[python]
+format = "[($symbol$virtualenv)]($style)"
+
 [aws]
-format = "on [$symbol$profile]($style) "
+format = "on [$symbol$profile]($style)"
 style = "bold blue"
 symbol = "🅰 "
