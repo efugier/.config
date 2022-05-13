@@ -350,7 +350,7 @@ def create_right_prompt [] {
 # Use nushell functions to define your right and left prompt
 let-env PROMPT_COMMAND = { create_left_prompt }
 let-env PROMPT_COMMAND_RIGHT = { "" }
- 
+
 # The prompt indicators are environmental variables that represent
 # the state of the prompt
 let-env PROMPT_INDICATOR = ""
@@ -384,7 +384,7 @@ let-env PATH = ($env.PATH | append "/usr/local/go/bin")
 # Pyenv
 let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/bin")
 let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/shims")
-# replicate pyenv init - | source 
+# replicate pyenv init - | source
 let-env PYENV_VERSION = ""
 let-env PYENV_VERSION_OLD = ""
 let-env PYENV_SHELL = "nu"
@@ -417,9 +417,20 @@ let-env PIPENV_VENV_IN_PROJECT = 1 # optional but recommended
 alias x = xargs
 
 # git
-alias gam = git commit --amend
+alias gs = git status
 alias gap = git add -p
 alias gcm = git commit -m
+alias gam = git commit --amend
+alias gdiff = git diff
+
+def gpf [remote: string = origin] {
+    git push --force-with-lease=$remote
+}
+
+def gri [offset: int = 3] {
+    git rebase -i $"HEAD~($offset)"
+}
+
 def gl [n: int = 13] {
     (
         git log --pretty=%h»¦«%s»¦«%aN»¦«%aD -n $n
@@ -428,26 +439,43 @@ def gl [n: int = 13] {
         | upsert author {|d| $d.author | str downcase | split row " " | get 0}
     )
 }
-def gpf [remote: string = origin] {
-    git push --force-with-lease=$remote
-}
-def gbn [offset: int = 0, --list(-l)] {
-    let current_branch_name = (git rev-parse --abbrev-ref HEAD)
-    if $list {
-        for $i in 1..( if $list && ($offset == 0) { 10 } else { $offset } ) {
-            do -i {  # suppress stderr 
-                git rev-parse --abbrev-ref $"@{-($i)}"
-            }
-        } | prepend $current_branch_name
-    } else if $offset == 0 {
-        $current_branch_name | str trim
-    } else {
-        git rev-parse --abbrev-ref $"@{-($offset)}" | str trim
-    }
-}
 
-def gri [offset: int = 3] {
-    git rebase -i $"HEAD~($offset)"
+# A slightly improved `git checkout` with fzf to pick a branch and better
+# behavior for `-` (last visited existing branch that isn't the current one).
+def gco [
+    branch?: string,  # will be forwarded to `git checkout $branch`
+    --list(-l),
+    --offset(-o)=10  # how far to go back in checkout  history
+] {
+    if $branch != null && $branch != "-" {
+        git checkout $branch
+    } else {
+        let past_branch_names = (
+            for $i in 1..([1 $offset] | math max) {
+                do -i {  # suppress stderr
+                    git rev-parse --abbrev-ref $"@{-($i)}"
+                }
+            }
+        )
+
+        let current_branch_name = (git branch --show current)
+
+        if $list {
+            $past_branch_names | prepend $current_branch_name
+        } else {
+            let past_branch_names = (  # remove duplicates, the current branch and deleted ones
+                $past_branch_names | uniq | where (not $it =~ "^@") && ($it != $current_branch_name)
+            )
+            let target_branch = (
+                if $branch == "-" {
+                    $past_branch_names | first
+                } else {
+                    $past_branch_names | str collect | fzf
+                } | str trim
+            )
+            git checkout $target_branch
+        }
+    }
 }
 
 
