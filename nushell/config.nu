@@ -360,15 +360,19 @@ let-env PROMPT_MULTILINE_INDICATOR = "::: "
 
 # -- PATH --
 
-def add-to-path [path: string] {
-  let-env PATH = ($env.PATH | append $path)
-}
-
 # system
 let-env EDITOR = "hx"
 let-env GIT_EDITOR = "hx"
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/.local/bin")
+
+# homebrew
+let-env PATH = ($env.PATH | append "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin")
+let-env HOMEBREW_PREFIX = "/home/linuxbrew/.linuxbrew"
+let-env HOMEBREW_CELLAR = "/home/linuxbrew/.linuxbrew/Cellar"
+let-env HOMEBREW_REPOSITORY = "/home/linuxbrew/.linuxbrew/Homebrew"
+let-env MANPATH = "/home/linuxbrew/.linuxbrew/share/man"
+let-env INFOPATH = "/home/linuxbrew/.linuxbrew/share/info"
 
 # Helix
 let-env HELIX_RUNTIME = $"($env.HOME)/.config/helix/runtime"
