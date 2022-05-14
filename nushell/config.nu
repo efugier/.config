@@ -501,12 +501,12 @@ def gl [n: int = 13] {
 # A slightly improved `git checkout` with fzf to pick a branch and better
 # behavior for `-` (last visited existing branch that isn't the current one).
 def gco [
-    branch?: string,  # will be forwarded to `git checkout $branch`
     --list(-l),
     --offset(-o)=10  # how far to go back in checkout  history
+    ...args,  # will be forwarded to `git checkout $args`
 ] {
-    if $branch != null && $branch != "-" {
-        git checkout $branch
+    if $args != [] && $args != ["-"] {
+        git checkout $args
     } else {
         let past_branch_names = (
             for $i in 1..([1 $offset] | math max) {
@@ -525,7 +525,7 @@ def gco [
                 $past_branch_names | uniq | where (not $it =~ "^@") && ($it != $current_branch_name)
             )
             let target_branch = (
-                if $branch == "-" {
+                if $args == ["-"] {
                     $past_branch_names | first
                 } else {
                     $past_branch_names | str collect | fzf
