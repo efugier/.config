@@ -469,6 +469,12 @@ def-env c [
 }
 
 # git
+
+def git-personal-credentials [] {
+    git config --local user.name "efugier"
+    git config --local user.email "mail@emilienfugier.net"
+}
+
 alias gs = git status
 alias gap = git add -p
 alias gcm = git commit -m
