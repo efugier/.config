@@ -394,15 +394,13 @@ let-env PYENV_VERSION_OLD = ""
 let-env PYENV_SHELL = "nu"
 #source '/home/emilien.fugier/.pyenv/libexec/../completions/pyenv.bash'
 
-let og_pyenv = $"($env.HOME)/.pyenv/bin/pyenv"
 def-env pyenv [command, ...args] {
     let new-env = if $command in ["activate", "deactivate", "rehash", "shell"] {
         if $command == "shell" {
             { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $args.0 }
         }
     } else {
-        echo $og_pyenv
-        ./$"($og_pyenv)" $command $args
+        ^pyenv $command $args
         {}
     }
     load-env $new-env
