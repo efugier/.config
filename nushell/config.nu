@@ -142,7 +142,7 @@ let $config = {
   use_ansi_coloring: true
   filesize_format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, zb, zib, auto
   edit_mode: emacs # emacs, vi
-  max_history_size: 10000 # Session has to be reloaded for this to take effect
+  max_history_size: 100000 # Session has to be reloaded for this to take effect
   sync_history_on_enter: true # Enable to share the history between multiple sessions, else you have to close the session to persist history to file
   menus: [
       # Configuration for default nushell menus
@@ -385,19 +385,24 @@ let-env GOPATH = $"($env.HOME)/go:$env.HOME/code"
 let-env PATH = ($env.PATH | append "$GOPATH/bin")
 let-env PATH = ($env.PATH | append "/usr/local/go/bin")
 
-# Pyenv
+# -- pyenv --
+
 let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/bin")
 let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/shims")
+
 # replicate pyenv init - | source
 let-env PYENV_VERSION = ""
 let-env PYENV_VERSION_OLD = ""
 let-env PYENV_SHELL = "nu"
-#source '/home/emilien.fugier/.pyenv/libexec/../completions/pyenv.bash'
+
+#TODO: replicate source '/home/XXXX/.pyenv/libexec/../completions/pyenv.bash'
 
 def-env pyenv [command, ...args] {
     let new-env = if $command in ["activate", "deactivate", "rehash", "shell"] {
         if $command == "shell" {
             { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $args.0 }
+        } else {
+            error make { msg: $"`($command)` command is not supported yet" }
         }
     } else {
         ^pyenv $command $args
@@ -406,9 +411,12 @@ def-env pyenv [command, ...args] {
     load-env $new-env
 }
 
-# Pipenv
+# -- pipenv --
+
+# use pipenv function made for bash to edit the env
+# TODO: add poetry support
 def pshell [] {
-    fish "-c" "pipenv run nu"
+    bash "-c" "pipenv run nu"
 }
 let-env PIPENV_PYTHON = $"($env.HOME)/.pyenv/shims/python"
 let-env PIPENV_VENV_IN_PROJECT = 1 # optional but recommended
@@ -468,6 +476,30 @@ def-env c [
     cd $target_dir
 }
 
+# edit the target of a copy
+def cpe [source: string, --recursive(-r)] {
+    let tempfile = "/tmp/.cpmvedit"
+    echo $source | save --raw $tempfile
+    ^$env.EDITOR $tempfile
+    if $recursive {
+        cp -r $source (open $tempfile)
+    } else {
+        cp $source (open $tempfile)
+    }
+}
+
+# edit the target of a move
+def mve [source: string, --recursive(-r)] {
+    let tempfile = "/tmp/.cpmvedit"
+    echo $source | save --raw $tempfile
+    ^$env.EDITOR $tempfile
+    if $recursive {
+        mv $source (open $tempfile)
+    } else {
+        mv $source (open $tempfile)
+    }
+}
+
 # git
 
 def git-personal-credentials [] {
@@ -498,7 +530,7 @@ def gl [n: int = 13] {
     )
 }
 
-# A slightly improved `git checkout` with fzf to pick a branch and better
+# Wrapper around `git checkout` using fzf to pick a branch and better
 # behavior for `-` (last visited existing branch that isn't the current one).
 def gco [
     --list(-l),
