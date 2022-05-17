@@ -127,7 +127,7 @@ let default_theme = {
 }
 
 # The default config record. This is where much of your global configuration is setup.
-let $config = {
+let-env config = {
   filesize_metric: false
   table_mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
   use_ls_colors: true
@@ -360,13 +360,13 @@ let-env PROMPT_MULTILINE_INDICATOR = "::: "
 
 # -- PATH --
 
-# system
+# -- system --
 let-env EDITOR = "hx"
 let-env GIT_EDITOR = "hx"
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/.local/bin")
 
-# homebrew
+#  -- homebrew --
 let-env PATH = ($env.PATH | append "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin")
 let-env HOMEBREW_PREFIX = "/home/linuxbrew/.linuxbrew"
 let-env HOMEBREW_CELLAR = "/home/linuxbrew/.linuxbrew/Cellar"
@@ -374,13 +374,13 @@ let-env HOMEBREW_REPOSITORY = "/home/linuxbrew/.linuxbrew/Homebrew"
 let-env MANPATH = "/home/linuxbrew/.linuxbrew/share/man"
 let-env INFOPATH = "/home/linuxbrew/.linuxbrew/share/info"
 
-# Helix
+# -- helix --
 let-env HELIX_RUNTIME = $"($env.HOME)/.config/helix/runtime"
 
-# Rust
+# -- rust --
 let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin")
 
-# Go
+# -- go --
 let-env GOPATH = $"($env.HOME)/go:$env.HOME/code"
 let-env PATH = ($env.PATH | append "$GOPATH/bin")
 let-env PATH = ($env.PATH | append "/usr/local/go/bin")
@@ -422,10 +422,16 @@ let-env PIPENV_PYTHON = $"($env.HOME)/.pyenv/shims/python"
 let-env PIPENV_VENV_IN_PROJECT = 1 # optional but recommended
 
 
+# -- npm --
+
+let-env PATH = ($env.PATH | append ("~/.npm-global/bin" | abspath))
+
+
 # -- Aliases and commands --
 
 alias x = xargs
 
+# normalizes an absolute path, `expand` alone will often leave `/./` in it
 def abspath [] {
       each { |$it| $it | path expand | path parse | path join }
 }
@@ -449,7 +455,8 @@ def-env c [
 
     let $target_dir = if ($query | path exists) {
         let query = ($query | abspath)
-        $cd_history | prepend $query | uniq | save $history_file
+        # save the new history
+        $cd_history | prepend $query | uniq | where ($it | path exists) | save $history_file
         $query
     } else if ($query in ["~"]) {
         $query
@@ -463,12 +470,13 @@ def-env c [
     } else {
         let target_dir = (
             $cd_history
-            | where $it != $current_directory
+            | where ($it != $current_directory) && ($it | path exists)
             | str replace $env.HOME "~"  # nicer on the eyes
             | str collect "\n"
             | fzf $"--query=($query)" | str trim | abspath
         )
         if $target_dir != "" && ($target_dir | path exists) {
+            # save the new history
             $cd_history | prepend $target_dir | uniq | save $history_file
         }
         $target_dir
@@ -533,11 +541,15 @@ def gl [n: int = 13] {
 # Wrapper around `git checkout` using fzf to pick a branch and better
 # behavior for `-` (last visited existing branch that isn't the current one).
 def gco [
+    --new_branch(-b)  # becomes `git checkout -b ...args`
     --list(-l),
     --offset(-o)=10  # how far to go back in checkout  history
     ...args,  # will be forwarded to `git checkout $args`
 ] {
-    if $args != [] && $args != ["-"] {
+    if $new_branch {
+        git checkout -b $args
+    }
+    else if $args != [] && $args != ["-"] {
         git checkout $args
     } else {
         let past_branch_names = (
