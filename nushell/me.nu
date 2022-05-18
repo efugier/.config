@@ -173,3 +173,9 @@ export def-env pyenv [command, ...args] {
 export def pshell [] {
     bash "-c" "pipenv run nu"
 }
+
+
+# -- nushell --
+
+export alias from-text = split row "\n"
+export alias to-text = str collect "\n"
