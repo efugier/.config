@@ -86,8 +86,8 @@ let-env PATH = ($env.PATH | append "/usr/local/go/bin")
 
 # -- pyenv --
 
-let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/bin")
-let-env PATH = ($env.PATH | append $"($env.HOME)/.pyenv/shims")
+let-env PATH = ($env.PATH | prepend $"($env.HOME)/.pyenv/bin")
+let-env PATH = ($env.PATH | prepend $"($env.HOME)/.pyenv/shims")
 
 # replicate pyenv init - | source
 #TODO: replicate source '/home/XXXX/.pyenv/libexec/../completions/pyenv.bash'
