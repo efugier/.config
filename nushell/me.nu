@@ -91,7 +91,7 @@ export def git-set-personal-credentials [] {
     git config -l | split row "\n" | find "user"
 }
 
-export alias gs = git status
+export alias gs = git status -sbs
 export alias gap = git add -p
 export alias gcm = git commit -m
 export alias gam = git commit --amend
@@ -119,7 +119,7 @@ export def gl [n: int = 13] {
 export def gco [
     --new_branch(-b)  # becomes `git checkout -b $args`
     --list(-l),
-    --limit(-o)=10  # how far to go back in checkout history
+    --limit(-o)=20  # how far to go back in checkout history
     ...args,  # will be forwarded to `git checkout $args`
 ] {
     if $new_branch {
