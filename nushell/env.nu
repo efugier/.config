@@ -73,6 +73,9 @@ let-env HOMEBREW_REPOSITORY = "/home/linuxbrew/.linuxbrew/Homebrew"
 let-env MANPATH = "/home/linuxbrew/.linuxbrew/share/man"
 let-env INFOPATH = "/home/linuxbrew/.linuxbrew/share/info"
 
+# -- docker --
+let-env GPG_TTY = $"(tty)"
+
 # -- helix --
 let-env HELIX_RUNTIME = $"($env.HOME)/.config/helix/runtime"
 
