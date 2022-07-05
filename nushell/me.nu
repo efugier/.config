@@ -15,28 +15,28 @@ export def abspath [] {
       each { |$it| $it | path expand | path parse | path join }
 }
 
-# Wrapper around `cd` that manages a `.cd_history` file and
-# allows you to chose from it using fzf.
-# All entries in the history are supposed to be normalized with the `abspath` command
-# and ordered by most recent-first.
+# Wrapper around `cd` that manages a `.cd_history` file and allows you to
+# chose from it using fzf, or go directly to the matching entry if there
+# is only one.
+#
+# All lines of the history file are supposed to be normalized with
+# the `abspath` command and ordered by with most recently-visited.
 export def-env c [
     query: string = ""
-    # path, fzf query or special command
+    # existing path, fuzzy path query or special command
     # ...................   - existing path, -, ~ → same as cd
+    # ...................   - query matching only one history entry → cd to it
     # ...................   - _ → cross shell equivalent of - (newest entry in history)
     # ...................   - everything else → query for fzf
 ] {
     let history_file = ("~/.cd_history" | abspath)
 
-    # nore recent must be on top for `uniq` preserve order
+    # more recently visited directories must be on top for `uniq` to preserve order
     let cd_history = (open $history_file | lines)
     let current_directory = (pwd | str trim | abspath)
 
     let $target_dir = if ($query | path exists) {
-        let query = ($query | abspath)
-        # save the new history
-        $cd_history | prepend $query | uniq | where ($it | path exists) | save $history_file
-        $query
+        $query | abspath
     } else if ($query in ["~"]) {
         $query
     } else if $query == "-" {
@@ -47,19 +47,26 @@ export def-env c [
         | where $it != $current_directory
         | first
     } else {
+        let matching_history = ($cd_history | where $it =~ $query)
+
         let target_dir = (
-            $cd_history
-            | where ($it != $current_directory) && ($it | path exists)
-            | str replace $env.HOME "~"  # nicer on the eyes
-            | str collect "\n"
-            | fzf $"--query=($query)" | str trim | abspath
+            if ($matching_history | length) == 1 {
+                $matching_history | get 0
+            } else {
+                $cd_history
+                | where ($it != $current_directory) && ($it | path exists)
+                | str replace $env.HOME "~"  # nicer on the eyes
+                | str collect "\n"
+                | fzf $"--query=($query)" --height=40% --layout=reverse --inline-info
+            } | str trim | abspath
         )
-        if $target_dir != "" && ($target_dir | path exists) {
-            # save the new history
-            $cd_history | prepend $target_dir | uniq | save $history_file
-        }
+
+
         $target_dir
     }
+    # update ~/.cd_history
+    $cd_history | prepend $target_dir | uniq | where ($it | path exists) | save $history_file
+
     cd $target_dir
 }
 
@@ -145,7 +152,7 @@ export def gco [
                 if $args == ["-"] {
                     $past_branch_names | first
                 } else {
-                    $past_branch_names | str collect | fzf
+                    $past_branch_names | str collect | fzf --height=40% --layout=reverse --inline-info
                 } | str trim
             )
 
