@@ -90,6 +90,26 @@ export def mve [source: string] {
      mv $source (open $tempfile)
 }
 
+export def rec-sed [query: string, --in-place(-i), --target-dir(-t): string = "", --filter(-f): string = ""] {
+    let files = if ($target-dir | str length) > 0 {
+        ls $"($target-dir)/**/*" | where type == file | get name
+    } else {
+        ls **/* | where type == file | get name
+    }
+
+    let files = if ($filter | str length) > 0 {
+        $files | find --regex $filter
+    } else {
+        $files
+    }
+
+    if $in-place {
+        $files | each { |$it| sed -i $query $it }
+    } else {
+        $files | each { |$it| sed $query $it }
+    }
+}
+
 # -- git --
 
 export def git-set-personal-credentials [] {
