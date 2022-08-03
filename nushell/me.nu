@@ -122,7 +122,6 @@ export alias gs = git status -sbs
 export alias gap = git add -p
 export alias gcm = git commit -m
 export alias gam = git commit --amend
-export alias gdiff = git diff
 
 export def gpf [remote: string = origin] {
     git push --force-with-lease=$remote
@@ -139,6 +138,17 @@ export def gl [n: int = 13] {
         | upsert date {|d| $d.date | into datetime}
         | upsert author {|d| $d.author | str downcase | split row " " | get 0}
     )
+}
+
+export def gd [...args] {
+    git diff $args --name-only --relative | xargs bat --color=always --diff
+    # let preview = $"git diff ($args) --color=always -- {-1}"
+    # git diff $args --name-only | fzf -m --ansi --preview $preview
+}
+
+export def fgd [...args] {
+    let preview = "bat {} --color=always --diff"
+    git diff $args --name-only | fzf --reverse -m --ansi --preview $preview --preview-window up,99%,wrap
 }
 
 # Wrapper around `git checkout` using fzf to pick a branch and better
