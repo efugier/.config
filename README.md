@@ -1,5 +1,8 @@
-Necessary programs to install:
+Necessary softwares to install:
 
+- [nushell](https://www.nushell.sh)
+- [helix](https://helix-editor.com)
+- [bat](https://github.com/sharkdp/bat)
 - [cargo](https://github.com/rust-lang/cargo)
 - [alacritty](https://github.com/alacritty/alacritty)
 - [kakoune](https://github.com/mawww/kakoune)
@@ -9,6 +12,6 @@ Necessary programs to install:
 
 
 Coding stuff is assumed to be in `~/code`.
+Open source repos are assumed to be in `~/from-source`.
 
-`exec` contains cool exectuables that can be tied to shorcuts through the desktop environment's settings.
-
+`bin` contains cool exectuables that can be tied to shorcuts through the desktop environment's settings.
