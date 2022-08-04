@@ -1,8 +1,8 @@
 . ~/.config/fish/abbreviations.fish
-. ~/.config/fish/work_abbreviations.fish
+. ~/.config/fish/_work_abbreviations.fish
 
 . ~/.config/fish/aliases.fish
-. ~/.config/fish/work_aliases.fish
+. ~/.config/fish/_work_aliases.fish
 
 # system
 set -Ux EDITOR hx

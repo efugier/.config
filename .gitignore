@@ -2,25 +2,31 @@
 *
 
 # But not these files...
+
 !.gitignore
 !README.md
 
-!nushell/me.nu
+!starship.toml
 
-!helix/config.toml
-!helix/languages.toml
-
-!alacritty/*
+!nushell/*
+!helix/*
 !exec/*
 !fish/*
 !kak/*
 !kak-lsp/*
-!starship.toml
+!bat/*
+!alacritty/*
 
-# ...even if they are in subdirectories
-# !*/
+!*/
 
-# if the files to be tracked are in subdirectories
-# !*/a/b/file1.txt
-# !*/a/b/c/*
+# ...and among those ignore these
 
+nushell/config.nu
+nushell/history.txt
+
+helix/runtime
+
+fish/fish_variables
+
+# work-related files should be prefixed by "_work"
+**/_work*
