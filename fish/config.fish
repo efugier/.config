@@ -10,6 +10,7 @@ set -Ux GIT_EDITOR hx
 set -Ux MYTERM alacritty
 
 fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.config/bin
 
 # Helix
 set -Ux HELIX_RUNTIME "$HOME/.config/helix/runtime"

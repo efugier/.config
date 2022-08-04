@@ -64,6 +64,7 @@ let-env EDITOR = "hx"
 let-env GIT_EDITOR = "hx"
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/.local/bin")
+let-env PATH = ($env.PATH | append $"($env.HOME)/.config/bin")
 
 #  -- homebrew --
 let-env PATH = ($env.PATH | append "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin")

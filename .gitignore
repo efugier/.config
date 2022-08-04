@@ -10,7 +10,7 @@
 
 !nushell/*
 !helix/*
-!exec/*
+!bin/*
 !fish/*
 !kak/*
 !kak-lsp/*
