@@ -85,9 +85,9 @@ export def mve [source: string] {
      mv $source (open $tempfile)
 }
 
-export def rec-sed [query: string, --in-place(-i), --target-dir(-t): string = "", --filter(-f): string = ""] {
-    let files = if ($target-dir | str length) > 0 {
-        ls $"($target-dir)/**/*" | where type == file | get name
+export def rec-sed [query: string, --in_place(-i), --target_dir(-t): string = "", --filter(-f): string = ""] {
+    let files = if ($target_dir | str length) > 0 {
+        ls $"($target_dir)/**/*" | where type == file | get name
     } else {
         ls **/* | where type == file | get name
     }
@@ -98,7 +98,7 @@ export def rec-sed [query: string, --in-place(-i), --target-dir(-t): string = ""
         $files
     }
 
-    if $in-place {
+    if $in_place {
         $files | each { |$it| sed -i $query $it }
     } else {
         $files | each { |$it| sed $query $it }
@@ -192,7 +192,7 @@ export def gco [
 # -- python --
 
 export def-env pyenv [command, ...args] {
-    let new-env = if $command in ["activate", "deactivate", "rehash", "shell"] {
+    let new_env = if $command in ["activate", "deactivate", "rehash", "shell"] {
         if $command == "shell" {
             { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $args.0 }
         } else {
@@ -202,7 +202,7 @@ export def-env pyenv [command, ...args] {
         ^pyenv $command $args
         {}
     }
-    load-env $new-env
+    load-env $new_env
 }
 
 # use pipenv function made for bash to edit the env
