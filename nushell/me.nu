@@ -15,14 +15,14 @@ export def abspath [] {
 # is only one.
 #
 # All lines of the history file are supposed to be normalized with
-# the `abspath` command and ordered by with most recently-visited.
+# the `abspath` command and ordered by most recently-visited.
 export def-env c [
     query: string = ""
     # existing path, fuzzy path query or special command
     # ...................   - existing path, -, ~ → same as cd
     # ...................   - query matching only one history entry → cd to it
     # ...................   - _ → cross shell equivalent of - (newest entry in history)
-    # ...................   - everything else → query for fzf
+    # ...................   - everything else → query for fzf run on the history
 ] {
     let history_file = ("~/.cd_history" | abspath)
 
@@ -30,13 +30,12 @@ export def-env c [
     let cd_history = (open $history_file | lines)
     let current_directory = (pwd | str trim | abspath)
 
-    let $target_dir = if ($query | path exists) {
+    let $target_dir = if (not ($query | is-empty)) && ($query | path exists) {
         $query | abspath
-    } else if ($query in ["~"]) {
-        $query
     } else if $query == "-" {
-        # for some reason returning "-" above doesn't work
-        if "OLDPWD" in (env).name { $env.OLDPWD } else { "" }
+        if "OLDPWD" in (env).name { $env.OLDPWD } else { "" | abspath }
+    } else if $query == "~" {
+        $query
     } else if $query == "_" {
         $cd_history
         | where $it != $current_directory
@@ -44,21 +43,19 @@ export def-env c [
     } else {
         let matching_history = ($cd_history | where $it =~ $query)
 
-        let target_dir = (
-            if ($matching_history | length) == 1 {
-                $matching_history | get 0
-            } else {
-                $cd_history
-                | where ($it != $current_directory) && ($it | path exists)
-                | str replace $env.HOME "~"  # nicer on the eyes
-                | str collect "\n"
-                | fzf $"--query=($query)" --height=40% --layout=reverse --inline-info
-            } | str trim | abspath
-        )
-
-
-        $target_dir
+        # go directly to the only match
+        if ($matching_history | length) == 1 {
+            $matching_history | get 0
+        } else {
+        # select the target in fzf
+            $cd_history
+            | where ($it != $current_directory) && ($it | path exists)
+            | str replace $env.HOME "~"  # nicer on the eyes
+            | str collect "\n"
+            | fzf $"--query=($query)" --height=40% --layout=reverse --inline-info
+        } | str trim | abspath
     }
+
     # update ~/.cd_history
     $cd_history | prepend $target_dir | uniq | where ($it | path exists) | save $history_file
 
