@@ -1,10 +1,10 @@
-# Ignore everything
+# Ignore everything...
 *
 
-# But not these files...
+# ...but not these files...
 
 !.gitignore
-!./README.md
+!/README.md
 
 !starship.toml
 
@@ -19,14 +19,18 @@
 
 !*/
 
-# ...and among those ignore these
+# ...and among those ignore these...
 
-nushell/config.nu
 nushell/history.txt
+nushell/config.nu
+# auto generate it to the lastest version, then just add the following at the end:
+# # -- use custom files --
+# use ~/.config/nushell/me.nu *; use ~/.config/nushell/_work.nu *
 
 helix/runtime
 
 fish/fish_variables
 
-# work-related files should be prefixed by "_work"
+# ...and the work-related configs (files prefixed by "_work")
+
 **/_work*
