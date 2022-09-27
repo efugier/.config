@@ -20,9 +20,9 @@ export def-env c [
     query: string = ""
     # existing path, fuzzy path query or special command
     # ...................   - existing path, -, ~ → same as cd
-    # ...................   - query matching only one history entry → cd to it
     # ...................   - _ → cross shell equivalent of - (newest entry in history)
-    # ...................   - everything else → query for fzf run on the history
+    # ...................   - query matching only one history entry → cd to it
+    # ...................   - everything else → query for fzf to run on the history
 ] {
     let history_file = ("~/.cd_history" | abspath)
 
