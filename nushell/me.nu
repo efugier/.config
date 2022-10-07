@@ -116,7 +116,17 @@ export alias gcm = git commit -m
 export alias gam = git commit --amend
 
 export def gpf [remote: string = origin] {
-    git push --force-with-lease=$remote
+    let proceed = if (git branch --show-current | str trim) in ["main", "master"] {
+        echo "You currently are on the main/master branch, proceed? [y/n]"
+        (input | str trim | str downcase) == "y"
+    } else {
+        true
+    }
+    if $proceed {
+        git push --force-with-lease=$remote
+    } else {
+        echo "Aborted."
+    }
 }
 
 export def gri [offset: int = 3] {
