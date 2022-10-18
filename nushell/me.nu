@@ -51,7 +51,7 @@ export def-env c [
             $cd_history
             | where ($it != $current_directory) && ($it | path exists)
             | str replace $env.HOME "~"  # nicer on the eyes
-            | str collect "\n"
+            | str join "\n"
             | fzf $"--query=($query)" --height=40% --layout=reverse --inline-info
         } | str trim | abspath
     }
@@ -142,8 +142,9 @@ export def gl [n: int = 13] {
     )
 }
 
-export def gd [...args] {
-    git diff $args --name-only --relative | xargs bat --color=always --diff
+export def gd [] {
+    let files = (git diff --name-only --relative | lines)
+    bat --color=always --diff $files
     # let preview = $"git diff ($args) --color=always -- {-1}"
     # git diff $args --name-only | fzf -m --ansi --preview $preview
 }
@@ -184,7 +185,7 @@ export def gco [
                 if $args == ["-"] {
                     $past_branch_names | first
                 } else {
-                    $past_branch_names | str collect | fzf --height=40% --layout=reverse --inline-info
+                    $past_branch_names | str join | fzf --height=40% --layout=reverse --inline-info
                 } | str trim
             )
 
