@@ -198,6 +198,21 @@ export def gco [
 }
 
 
+export def gh-deploy [--target_dir(-t): string = "site", --message(-m): string = "Deploy to gh-pages"] {
+        make $target_dir
+        git worktree add -f gh-pages
+        cd gh-pages
+        # Delete the ref to avoid keeping history.
+        git update-ref -d refs/heads/gh-pages
+        rm -rf *
+        cp -r $"../($target_dir)/*" .
+        git add .
+        git commit -m $message
+        git push --force --set-upstream origin gh-pages
+        cd ..
+        git worktree remove gh-pages
+}
+
 # -- python --
 
 export def-env pyenv [command, ...args] {
