@@ -10,7 +10,7 @@ export def abspath [] {
       each { |$it| $it | path expand | path parse | path join }
 }
 
-# Wrapper around `cd` that manages a `.cd_history` file and allows you to
+# Wrapper around `cd` that manages a `.c_history` file and allows you to
 # chose from it using fzf, or go directly to the matching entry if there
 # is only one.
 #
@@ -24,10 +24,11 @@ export def-env c [
     # ...................   - query matching only one history entry → cd to it
     # ...................   - everything else → query for fzf to run on the history
 ] {
-    let history_file = ("~/.cd_history" | abspath)
+    touch ~/.c_history
+    let history_file = ("~/.c_history" | abspath)
 
     # more recently visited directories must be on top for `uniq` to preserve order
-    let cd_history = (open $history_file | lines)
+    let c_history = (open $history_file | lines)
     let current_directory = (pwd | str trim | abspath)
 
     let $target_dir = if (not ($query | is-empty)) && ($query | path exists) {
@@ -37,18 +38,18 @@ export def-env c [
     } else if $query == "~" {
         $query
     } else if $query == "_" {
-        $cd_history
+        $c_history
         | where $it != $current_directory
         | first
     } else {
-        let matching_history = ($cd_history | where $it =~ $query)
+        let matching_history = ($c_history | where $it =~ $query)
 
         # go directly to the only match
         if ($matching_history | length) == 1 {
             $matching_history | get 0
         } else {
         # select the target in fzf
-            $cd_history
+            $c_history
             | where ($it != $current_directory) && ($it | path exists)
             | str replace $env.HOME "~"  # nicer on the eyes
             | str join "\n"
@@ -56,8 +57,8 @@ export def-env c [
         } | str trim | abspath
     }
 
-    # update ~/.cd_history
-    $cd_history | prepend $target_dir | uniq | where ($it | path exists) | save $history_file
+    # update history file
+    $c_history | prepend $target_dir | uniq | where ($it | path exists) | save $history_file
 
     cd $target_dir
 }
