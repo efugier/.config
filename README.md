@@ -57,7 +57,7 @@ echo "use ~/.config/nushell/me.nu *; use ~/.config/nushell/_work.nu *" >> .confi
 touch ~/.config/nushell/_work.nu
 
 brew update
-brew install starship fzf helix ripgrep bat pyenv jq kubectx derailed/k9s/k9s
+brew install starship fzf helix ripgrep bat pyenv jq kubectx derailed/k9s/k9s fd httpie
 
 hx --grammar fetch && hx --grammar build
 
