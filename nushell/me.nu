@@ -215,22 +215,12 @@ export def gh-deploy [--target_dir(-t): string = "site", --message(-m): string =
 
 # -- python --
 
-export def-env pyenv [command, ...args] {
-    let new_env = if $command in ["activate", "deactivate", "rehash", "shell"] {
-        if $command == "shell" {
-            { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $args.0 }
-        } else {
-            error make { msg: $"`($command)` command is not supported yet" }
-        }
-    } else {
-        ^pyenv $command $args
-        {}
-    }
-    load-env $new_env
+export def-env pyenv-shell [version] {
+    load-env { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $version }
+
 }
 
 # use pipenv function made for bash to edit the env
-# TODO: add poetry support
 export def pshell [] {
     bash "-c" "pipenv run nu"
 }
