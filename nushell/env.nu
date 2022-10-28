@@ -85,7 +85,7 @@ let-env PATH = ($env.PATH | append $"($env.HOME)/.cargo/bin")
 
 # -- go --
 let-env GOPATH = $"($env.HOME)/go:($env.HOME)/code"
-let-env PATH = ($env.PATH | append $"($env.GOPATH)/bin")
+let-env PATH = ($env.PATH | append $"($env.HOME)/go/bin")
 let-env PATH = ($env.PATH | append "/usr/local/go/bin")
 
 # -- pyenv --
