@@ -60,8 +60,8 @@ let-env PROMPT_MULTILINE_INDICATOR = "::: "
 # -- PATH --
 
 # -- system --
-let-env EDITOR = "hx"
-let-env GIT_EDITOR = "hx"
+let-env EDITOR = "nvim"
+let-env GIT_EDITOR = "nvim"
 
 let-env PATH = ($env.PATH | append $"($env.HOME)/.local/bin")
 let-env PATH = ($env.PATH | append $"($env.HOME)/.config/bin")

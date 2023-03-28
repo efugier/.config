@@ -4,6 +4,8 @@
 # -- unix --
 
 export alias x = xargs -I \args
+export alias vi = nvim
+export alias vim = nvim
 
 # normalizes an absolute path, `expand` alone will often leave `/./` in it
 export def abspath [] {
