@@ -33,7 +33,7 @@ export def-env c [
     let c_history = (open $history_file | lines)
     let current_directory = (pwd | str trim | abspath)
 
-    let $target_dir = if (not ($query | is-empty)) && ($query | path exists) {
+    let $target_dir = if (not ($query | is-empty)) and ($query | path exists) {
         $query | abspath
     } else if $query == "-" {
         if "OLDPWD" in (env).name { $env.OLDPWD } else { "" | abspath }
@@ -52,7 +52,7 @@ export def-env c [
         } else {
         # select the target in fzf
             $c_history
-            | where ($it != $current_directory) && ($it | path exists)
+            | where ($it != $current_directory) and ($it | path exists)
             | str replace $env.HOME "~"  # nicer on the eyes
             | str join "\n"
             | fzf $"--query=($query)" --height=40% --layout=reverse --inline-info
@@ -60,7 +60,7 @@ export def-env c [
     }
 
     # update history file
-    $c_history | prepend $target_dir | uniq | where ($it | path exists) | save $history_file
+    $c_history | prepend $target_dir | uniq | where ($it | path exists) | save -f $history_file
 
     cd $target_dir
 }
@@ -167,7 +167,7 @@ export def gco [
 ] {
     if $new_branch {
         git checkout -b $args
-    } else if $args != [] && $args != ["-"] {
+    } else if $args != [] and $args != ["-"] {
         git checkout $args
     } else {
         let past_branch_names = (
@@ -182,7 +182,7 @@ export def gco [
             $past_branch_names | prepend $current_branch_name
         } else {
             let past_branch_names = (  # remove duplicates, the current branch and deleted ones
-                $past_branch_names | uniq | where (not $it =~ "^@") && ($it != $current_branch_name)
+                $past_branch_names | uniq | where (not $it =~ "^@") and ($it != $current_branch_name)
             )
             let target_branch = (
                 if $args == ["-"] {
