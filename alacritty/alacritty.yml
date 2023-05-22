@@ -103,6 +103,11 @@
 
 # Font configuration
 
+font:
+  normal:
+    family: "UbuntuMono Nerd Font"
+  size: 13.0
+
 
 #font:
   # Normal (roman) font face
