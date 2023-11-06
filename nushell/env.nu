@@ -68,7 +68,6 @@ let-env NU_PLUGIN_DIRS = [
 let-env EDITOR = "nvim"
 let-env GIT_EDITOR = "nvim"
 
-let-env PATH = ($env.PATH | append $"($env.HOME)/.local/bin")
 let-env PATH = ($env.PATH | append $"($env.HOME)/.config/bin")
 
 #  -- homebrew --
