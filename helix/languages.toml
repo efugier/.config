@@ -1,3 +1,6 @@
 [[language]]
 name = "toml"
 file-types = ["toml", "Pipfile"]
+
+[language-server.rust-analyzer.config.check]
+command = "clippy"
