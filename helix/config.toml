@@ -10,6 +10,9 @@ insert = "bar"
 normal = "block"
 select = "underline"
 
+[editor.search]
+smart-case = false
+
 [editor.file-picker]
 hidden = false
 
@@ -20,3 +23,8 @@ skip-levels = 1
 
 [editor.soft-wrap]
 enable = true
+
+[keys.normal.space.space]
+c = ":pipe sc -r -p 'complete this code'"
+t = ":pipe sc -r -p 'write tests for this code'"
+r = ":pipe sc -r -p 'refactor this code with a focus on clarity and concision'"
