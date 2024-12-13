@@ -67,6 +67,7 @@ $env.NU_PLUGIN_DIRS = [
 # -- system --
 $env.EDITOR = "hx"
 $env.GIT_EDITOR = "hx"
+$env.PKG_CONFIG = "/usr/bin/pkg-config"
 
 $env.PATH = ($env.PATH | append $"($env.HOME)/.config/bin")
 

@@ -6,6 +6,7 @@
 export alias x = xargs -I \args
 export alias vi = nvim
 export alias vim = nvim
+export alias clip = xclip -selection clipboard
 
 # normalizes an absolute path, `expand` alone will often leave `/./` in it
 export def abspath [] {
@@ -18,7 +19,7 @@ export def abspath [] {
 #
 # All lines of the history file are supposed to be normalized with
 # the `abspath` command and ordered by most recently-visited.
-export def-env c [
+export def --env c [
     query: string = ""
     # existing path, fuzzy path query or special command
     # ...................   - existing path, -, ~ → same as cd
@@ -154,7 +155,7 @@ export def gd [] {
 
 export def fgd [...args] {
     let preview = "bat {} --color=always --diff"
-    git diff $args --name-only | fzf --reverse -m --ansi --preview $preview --preview-window up,99%,wrap
+    git diff ...$args --name-only | fzf --reverse -m --ansi --preview $preview --preview-window up,99%,wrap
 }
 
 # Wrapper around `git checkout` using fzf to pick a branch and better
@@ -166,9 +167,9 @@ export def gco [
     ...args,  # will be forwarded to `git checkout $args`
 ] {
     if $new_branch {
-        git checkout -b $args
+        git checkout -b ...$args
     } else if $args != [] and $args != ["-"] {
-        git checkout $args
+        git checkout ...$args
     } else {
         let past_branch_names = (
             1..([1 $limit] | math max)
@@ -182,13 +183,13 @@ export def gco [
             $past_branch_names | prepend $current_branch_name
         } else {
             let past_branch_names = (  # remove duplicates, the current branch and deleted ones
-                $past_branch_names | uniq | where (not $it =~ "^@") and ($it != $current_branch_name)
+                $past_branch_names | uniq | where (not ($it =~ "^@")) and ($it != $current_branch_name)
             )
             let target_branch = (
                 if $args == ["-"] {
                     $past_branch_names | first
                 } else {
-                    $past_branch_names | str join | fzf --height=40% --layout=reverse --inline-info
+                    $past_branch_names | str join "\n" | fzf --height=40% --layout=reverse --inline-info
                 } | str trim
             )
 
@@ -217,7 +218,7 @@ export def gh-deploy [--target_dir(-t): string = "site", --message(-m): string =
 
 # -- python --
 
-export def-env pyenv-shell [version] {
+export def --env pyenv-shell [version] {
     load-env { PYENV_VERSION_OLD: $env.PYENV_VERSION PYENV_VERSION: $version }
 
 }
